@@ -1,0 +1,15 @@
+case:
+  name: cases
+  round:
+    compile: TB_n_case
+    run: run
+
+gui:
+  name: gui
+
+dumpoff:
+  name: dump
+
+extension_list:
+  - uvm_verbosity
+  - no_cmp

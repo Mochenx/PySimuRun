@@ -1,0 +1,15 @@
+cases:
+  name: cases
+  round:
+    compile: 1
+    run: 2
+
+gui:
+  name: gui
+
+dumpoff:
+  name: dump
+
+extension_list:
+  - ext1
+  - ext2
