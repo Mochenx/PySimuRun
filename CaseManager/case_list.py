@@ -25,6 +25,9 @@ else:
 
 class TestBenchEnv(object):
     case_dir = '../../cases'
+    collect_result_list = []
+    running_tc_link = './pattern'
+    regression_path = 'regression_logs'
 
 
 # Test case discovery
