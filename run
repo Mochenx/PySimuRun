@@ -1,0 +1,170 @@
+#!/usr/bin/python
+# encoding = utf-8
+
+import getopt
+import sys
+import os
+import random
+from CaseManager.case_list import CaseList
+from Launchers import *
+
+
+__author__ = 'mochenx'
+
+
+default_config = '.config.yaml'
+default_workflow = './Launchers/.workflow.yaml'
+default_simtmplt = './Launchers/.sim_template.yaml'
+
+
+class Usage(object):
+    @classmethod
+    def show(cls):
+        print('./run test_case ... ' +
+              '[-s,--old_seed] [-o, --dumpoff] [[-r, --repeat] repeat_times] [-g, --gui] ' +
+              '[[-e, --ext_cmds] command_string]')
+
+
+class cli_args(object):
+    def __init__(self):
+        self.old_seed = False
+        self.dump_off = False
+        self.repeat_times = 1;
+        self.gui = False
+        self.ext_cmds = None
+
+
+def parse_opts():
+    try:
+        opts, args = getopt.gnu_getopt(sys.argv[1:], "hsvogr:e:",
+                                       ["help", "old_seed", "dumpoff", 'gui', 'repeat', 'ext_cmds'])
+    except getopt.GetoptError:
+        # print help information and exit:
+        Usage.show()
+        sys.exit(2)
+
+    verbose = False
+    opt_args = cli_args()
+    for o, a in opts:
+        if o == "-v":
+            verbose = True
+        elif o in ("-h", "--help"):
+            Usage.show()
+            sys.exit()
+        elif o in ("-s", "--old_seed"):
+            opt_args.old_seed = True
+        elif o in ("-o", "--dumpoff"):
+            opt_args.dump_off = True
+        elif o in ("-g", "--gui"):
+            opt_args.gui = True
+        elif o in ("-r", "--repeat"):
+            opt_args.repeat_times = int(a)
+        elif o in ("-e", "--ext_cmds"):
+            opt_args.ext_cmds = a
+
+    if len(args) == 0:
+        args.append('initial_test')
+    all_cases = []
+    for o in args:
+        testcases = CaseList.get_case_list(o)
+        if testcases is None:
+            continue
+        else:
+            print('The following cases will run:')
+            for case in testcases:
+                print(case)
+        all_cases.extend(testcases)
+
+    if len(all_cases) == 0:
+        print('None of cases matches given pattern: %s' % ' '.join(args))
+        exit(1)
+    return all_cases, opt_args
+
+
+def get_seed_gen(old_seed, seed_file_name):
+    def basic_seed_gen():
+        if old_seed and os.path.exists(seed_file_name):
+            seed_file = open(seed_file_name, 'r')
+            rand_seed = seed_file.read()
+            rand_seed = int(rand_seed)
+        else:
+            rand_seed = random.random() * 1000000
+            seed_file = open(seed_file_name, 'w')
+            seed_file.write('%0d' % rand_seed)
+        seed_file.close()
+        return rand_seed
+
+    return basic_seed_gen
+
+
+def main():
+    """
+    Steps:
+        1. Load config.yaml
+        2. Parse command line options, including all test-case names
+        3. Dynamic loading 'cases' extension
+    """
+    # Read .config.yaml
+    cfg_loader = load_config()
+    # TODO: Move next statement to a cases.py
+    # Initialize case_recognizer to a concrete one
+    # CaseList.case_recognizer =
+    testcases, opt_args = parse_opts()
+
+    # Start to deal with extensive commands
+    ext_cmds = ExtCommandLib()
+    proc_builtin_ext_cmds(opt_args)
+    if opt_args.ext_cmds is not None:
+        ext_cmds.dyn_load_ext_cmds(opt_args.ext_cmds)
+
+    # Cases names/paths are processed as special extensive commands referred by CaseList.cases_for_compile
+    CaseList.cases_for_compile.append_cases(testcases, opt_args.dump_off)
+
+    launcher = SimuWorkflow(opt_args.dump_off)
+    workflow, simtmplt = select_workflow()
+    # 1. Run multiple rounds of commands defined in a config file with YAML format 
+    try:
+        launcher.start(workflow, ext_cmds)
+    except RunCmdException:
+        sys.exit(1)
+    # 2. Refresh seed in simulation
+    f_get_seed = get_seed_gen(opt_args.old_seed, SimuWorkflow.seed_file_name)
+    # 3. Run all cases
+    launcher.run_cases(simtmplt, testcases,
+                       f_get_seed, opt_args.repeat_times, ext_cmds)
+
+
+def load_config():
+    config_file = default_config
+    if os.path.exists('./config.yaml'):
+        config_file = './config.yaml'
+    cfg_loader = ConfigLoader(config_file)
+    case_ext_entry = cfg_loader.get('cases')
+    case_ext_entry.load()
+    return cfg_loader
+
+
+def proc_builtin_ext_cmds(opt_args):
+    if opt_args.ext_cmds is None and opt_args.gui:
+        opt_args.ext_cmds = ' gui'
+    elif opt_args.gui:
+        opt_args.ext_cmds += ' gui'
+
+    if opt_args.ext_cmds is None and not opt_args.dump_off:
+        opt_args.ext_cmds = ' dump'
+    elif not opt_args.dump_off:
+        opt_args.ext_cmds += ' dump'
+
+
+def select_workflow():
+    workflow = default_workflow
+    simtmplt = default_simtmplt
+    if os.path.exists('./workflow.yaml'):
+        workflow = './workflow.yaml'
+    if os.path.exists('./sim_template.yaml'):
+        simtmplt = './sim_template.yaml'
+    return workflow, simtmplt
+
+
+if __name__ == '__main__':
+    main()
