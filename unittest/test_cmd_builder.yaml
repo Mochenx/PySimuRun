@@ -1,0 +1,11 @@
+- name: round1
+  command:
+  - cmd
+  - opt1
+  - opt2
+  - +D:
+    - m1
+    - m2
+    +I:
+    - i1
+    - i2
