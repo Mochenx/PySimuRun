@@ -3,6 +3,7 @@
 
 __author__ = 'mochenx'
 
-class ExtraSimOpts(object):
+
+class ExtSimOpts(object):
     def __call__(*args, **kwargs):
         pass

@@ -3,6 +3,7 @@
 
 __author__ = 'mochenx'
 
-class ExtraCmpOpts(object):
+
+class ExtCmpOpts(object):
     def __call__(*args, **kwargs):
         pass
