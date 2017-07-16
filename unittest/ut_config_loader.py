@@ -48,7 +48,7 @@ class UTConfigLoader(unittest.TestCase):
         self.assertRaises(UnsetRoundException, lambda: m_gui.compile_round)
         self.assertRaises(UnsetRoundException, lambda: m_gui.run_round)
 
-        m_dump = cfg_ldr.get('dumpoff')
+        m_dump = cfg_ldr.get('dump')
         self.assertRaises(UnsetRoundException, lambda: m_dump.compile_round)
         self.assertRaises(UnsetRoundException, lambda: m_dump.run_round)
 

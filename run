@@ -143,7 +143,7 @@ def load_config():
         config_file = './config.yaml'
     cfg_loader = ConfigLoader(config_file)
     # Dynamic Importing cases
-    for builtin_ext_name in ['cases', 'gui', 'dumpoff']:
+    for builtin_ext_name in ['cases', 'gui', 'dump']:
         ext_entry = cfg_loader.get(builtin_ext_name)
         ext_entry.load()
     # Dynamic Importing other extensions

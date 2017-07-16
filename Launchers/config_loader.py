@@ -78,7 +78,7 @@ class ConfigLoader(list):
         gui:
             name: gui
 
-        dumpoff:
+        dump:
             name: dump
 
         extension_list:
@@ -88,7 +88,7 @@ class ConfigLoader(list):
     Each builtin extension, e.g. cases, calls ConfigLoader.get('cases') to get known to which round it registers
     """
     ext_list_key_name = 'extension_list'
-    _builtin_ext = {'cases': None, 'gui': None, 'dumpoff': None}
+    _builtin_ext = {'cases': None, 'gui': None, 'dump': None}
 
     def __init__(self, cfg_path):
         self.all_cfg = None

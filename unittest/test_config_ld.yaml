@@ -7,7 +7,7 @@ cases:
 gui:
   name: gui
 
-dumpoff:
+dump:
   name: dump
 
 extension_list:

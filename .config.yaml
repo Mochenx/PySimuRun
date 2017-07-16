@@ -8,7 +8,7 @@ cases:
 gui:
   name: gui
 
-dumpoff:
+dump:
   name: dump
 
 # Other Extensions
