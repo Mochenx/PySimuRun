@@ -21,6 +21,7 @@ class SimuWorkflow(object):
     cmp_log_name = 'cmp.log'
     seed_file_name = 'rnd_seed'
     call_cmd_env = os.environ;
+    do_case_link = True
 
     def __init__(self, dump_off=False):
         self.cmp_log_file = None
@@ -74,8 +75,9 @@ class SimuWorkflow(object):
                         run_cmd.append(cmd(tc_name=tc_name, seed=seed))
                 print(' '.join(run_cmd))
                 # Execute Pre-run commands
-                os.system('rm -f %s' % TestBenchEnv.running_tc_link)
-                os.system('ln -s %s %s' % (str(one_tc), TestBenchEnv.running_tc_link))
+                if self.do_case_link:
+                    os.system('rm -f %s' % TestBenchEnv.running_tc_link)
+                    os.system('ln -s %s %s' % (str(one_tc), TestBenchEnv.running_tc_link))
                 for cmd_seq in pre_cmds:
                     os.system(' '.join(cmd_seq))
                 # Issue run simulation command

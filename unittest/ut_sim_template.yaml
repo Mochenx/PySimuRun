@@ -1,0 +1,19 @@
+# pre_run
+- name: pre_run
+  command:
+  - ./gen_sim_log.sh
+  - pre_run
+  - A
+
+# run
+- name: run
+  command:
+  - ./gen_sim_log.sh
+  - "'start running'"
+
+# post_run
+- name: post_run
+  command:
+  - ./gen_sim_log.sh
+  - B
+  - post_run

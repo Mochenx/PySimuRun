@@ -100,9 +100,12 @@ def get_seed_gen(old_seed, seed_file_name):
 def main():
     """
     Steps:
-        1. Load config.yaml
+        1. Load config.yaml and import extensions dynamically
         2. Parse command line options, including all test-case names
-        3. Dynamic loading 'cases' extension
+        3. Build all ext_cmd dict according to given ext_cmd command line
+        4. Load workflow and sim_template YAML
+        5. Execute workflow
+        6. Run simulation for each given test-case
     """
     # Read .config.yaml
     cfg_loader = load_config()
@@ -139,8 +142,12 @@ def load_config():
     if os.path.exists('./config.yaml'):
         config_file = './config.yaml'
     cfg_loader = ConfigLoader(config_file)
+    # Dynamic Importing cases
     case_ext_entry = cfg_loader.get('cases')
     case_ext_entry.load()
+    # Dynamic Importing other extensions
+    for ext in cfg_loader:
+        ext.load()
     return cfg_loader
 
 

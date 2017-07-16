@@ -1,0 +1,17 @@
+# pre_start
+- name: pre_start
+  command:
+  - echo
+  - wrong_pre_start
+
+# start
+- name: start
+  command:
+  - echo
+  - start working
+
+# post_start
+- name: post_start
+  command:
+  - echo
+  - wrong_post_start
