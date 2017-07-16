@@ -143,8 +143,9 @@ def load_config():
         config_file = './config.yaml'
     cfg_loader = ConfigLoader(config_file)
     # Dynamic Importing cases
-    case_ext_entry = cfg_loader.get('cases')
-    case_ext_entry.load()
+    for builtin_ext_name in ['cases', 'gui', 'dumpoff']:
+        ext_entry = cfg_loader.get(builtin_ext_name)
+        ext_entry.load()
     # Dynamic Importing other extensions
     for ext in cfg_loader:
         ext.load()
@@ -152,6 +153,11 @@ def load_config():
 
 
 def proc_builtin_ext_cmds(opt_args):
+    if opt_args.ext_cmds is None:
+        opt_args.ext_cmds = ' _cases'
+    else:
+        opt_args.ext_cmds += ' _cases'
+
     if opt_args.ext_cmds is None and opt_args.gui:
         opt_args.ext_cmds = ' gui'
     elif opt_args.gui:
