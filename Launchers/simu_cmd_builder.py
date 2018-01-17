@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding = utf-8
 
-import yaml
+import Launchers.yaml as yaml
 
 __author__ = 'mochenx'
 

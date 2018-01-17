@@ -5,7 +5,7 @@
 import subprocess
 from os.path import exists
 import os
-from simu_cmd_builder import SimuCmdBuilder
+from .simu_cmd_builder import SimuCmdBuilder
 from CaseManager.case_list import TestBenchEnv
 
 
